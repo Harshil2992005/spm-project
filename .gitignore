@@ -1,0 +1,47 @@
+﻿# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+frontend/node_modules/
+login-redesign/node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+backend/venv/
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+login-redesign/dist/
+
+# Env files
+.env
+.env.local
+.env.production
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+logs/
+*.log
+
+# Docker
+*.pid
+
+# Misc
+.cache/
