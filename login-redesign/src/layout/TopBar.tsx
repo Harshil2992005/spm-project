@@ -1,17 +1,19 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Bell, ChevronRight, LogOut, Menu, Moon, Search, Sun } from 'lucide-react'
+import { Bell, ChevronRight, LogOut, Menu, Moon, Search, ShoppingCart, Sun } from 'lucide-react'
 import BrandMark from '../components/BrandMark'
 import Dropdown, { DropdownItem, DropdownLabel, DropdownSeparator } from '../components/ui/Dropdown'
 import Tooltip from '../components/ui/Tooltip'
 import { cn } from '../lib/cn'
 import { initials } from '../lib/format'
 import { useAuth } from '../state/AuthProvider'
+import { useCart } from '../state/Cart'
 import { useTheme } from '../theme/ThemeProvider'
 import NotificationMenu from './NotificationMenu'
 
 const META: Record<string, { title: string; crumb: string }> = {
   '/': { title: 'Dashboard', crumb: 'Overview' },
   '/medicines': { title: 'Medicine Management', crumb: 'Inventory' },
+  '/orders': { title: 'Orders', crumb: 'Requests' },
   '/patients': { title: 'Patients', crumb: 'People' },
   '/prescriptions': { title: 'Prescriptions', crumb: 'Clinical' },
   '/billing': { title: 'Billing', crumb: 'Point of sale' },
@@ -20,6 +22,27 @@ const META: Record<string, { title: string; crumb: string }> = {
 interface TopBarProps {
   onOpenSearch: () => void
   onOpenMobileNav: () => void
+}
+
+function CartButton() {
+  const { count, setOpen } = useCart()
+  return (
+    <Tooltip label="Cart">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Open cart"
+        className="relative grid h-9 w-9 place-items-center rounded-xl text-muted transition hover:bg-black/5 hover:text-ink dark:hover:bg-white/10"
+      >
+        <ShoppingCart className="h-5 w-5" />
+        {count > 0 && (
+          <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-brand-600 px-1 text-[10px] font-bold leading-none text-white">
+            {count > 99 ? '99+' : count}
+          </span>
+        )}
+      </button>
+    </Tooltip>
+  )
 }
 
 export default function TopBar({ onOpenSearch, onOpenMobileNav }: TopBarProps) {
@@ -84,6 +107,9 @@ export default function TopBar({ onOpenSearch, onOpenMobileNav }: TopBarProps) {
 
         {/* Notifications */}
         <NotificationMenu />
+
+        {/* Cart */}
+        <CartButton />
 
         {/* User */}
         <Dropdown

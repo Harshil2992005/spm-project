@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  approveOrder,
+  cancelOrder,
   createBill,
   createMedicine,
+  createOrder,
   createPatient,
   createPrescription,
   deleteMedicine,
@@ -9,8 +12,10 @@ import {
   deletePrescription,
   getBills,
   getMedicines,
+  getOrders,
   getPatients,
   getPrescriptions,
+  rejectOrder,
   sendBillEmail,
   updateMedicine,
   updatePatient,
@@ -19,6 +24,7 @@ import {
 import type {
   MedicineCreate,
   MedicineUpdate,
+  OrderCreate,
   PatientCreate,
   PatientUpdate,
   PrescriptionCreate,
@@ -31,6 +37,7 @@ export const qk = {
   patients: ['patients'] as const,
   prescriptions: ['prescriptions'] as const,
   bills: ['bills'] as const,
+  orders: ['orders'] as const,
 }
 
 /* --------------------------------------------------------------- medicines */
@@ -150,4 +157,46 @@ export function useCreateBill() {
 
 export function useSendBillEmail() {
   return useMutation({ mutationFn: (id: string) => sendBillEmail(id) })
+}
+
+/* --------------------------------------------------------------- orders */
+
+export function useOrders(enabled = true) {
+  return useQuery({ queryKey: qk.orders, queryFn: getOrders, enabled })
+}
+
+export function useCreateOrder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: OrderCreate) => createOrder(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.orders }),
+  })
+}
+
+export function useApproveOrder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => approveOrder(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.orders })
+      qc.invalidateQueries({ queryKey: qk.bills })
+      qc.invalidateQueries({ queryKey: qk.medicines })
+    },
+  })
+}
+
+export function useRejectOrder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => rejectOrder(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.orders }),
+  })
+}
+
+export function useCancelOrder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => cancelOrder(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.orders }),
+  })
 }

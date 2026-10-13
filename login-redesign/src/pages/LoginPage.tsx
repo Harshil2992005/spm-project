@@ -109,7 +109,6 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
   const [otpVerifying, setOtpVerifying] = useState(false)
   const [passwordError, setPasswordError] = useState<FriendlyError | null>(null)
   const [otpError, setOtpError] = useState<FriendlyError | null>(null)
-  const [debugOtp, setDebugOtp] = useState<string | null>(null)
   const navigate = useNavigate()
   const [soundOn, setSoundOn] = useState(() => localStorage.getItem(SOUND_KEY) === 'on')
 
@@ -171,13 +170,10 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
     setOtpError(null)
     try {
       const res = await sendOtp(identifier)
-      setDebugOtp(res.debug_otp ?? null)
       push({
         type: 'success',
         title: 'Code sent',
-        message: res.debug_otp
-          ? `Demo mode — your code is ${res.debug_otp}`
-          : res.message || 'Check your inbox for the 6-digit code.',
+        message: res.message || 'Check your inbox for the 6-digit code.',
       })
       return true
     } catch (e) {
@@ -299,7 +295,6 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                       onVerify={handleOtpVerify}
                       sending={otpSending}
                       verifying={otpVerifying}
-                      debugOtp={debugOtp}
                       serverError={otpError ? { title: otpError.title, message: otpError.message } : null}
                       onDismissError={() => setOtpError(null)}
                     />

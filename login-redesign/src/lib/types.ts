@@ -173,5 +173,46 @@ export interface AuthUser {
   role_name?: string | null
 }
 
+/* --------------------------------------------------------------- orders */
+
+export interface OrderItem {
+  id?: string
+  order_id?: string
+  medicine_id: string
+  medicine_name?: string
+  quantity: number
+  unit_price: number
+  subtotal: number
+}
+
+export interface OrderItemCreate {
+  medicine_id: string
+  quantity: number
+}
+
+export interface OrderCreate {
+  /** Manager-only: which patient the order is for. Customers are auto-linked. */
+  patient_id?: string | null
+  notes?: string | null
+  items: OrderItemCreate[]
+}
+
+export type OrderStatus = 'Pending' | 'Approved' | 'Rejected' | 'Cancelled'
+
+export interface Order {
+  id: string
+  order_number: string
+  patient_id: string
+  patient_name?: string
+  customer_id: string
+  status: OrderStatus
+  sale_id?: string | null
+  bill_number?: string | null
+  notes?: string | null
+  created_at?: string
+  updated_at?: string
+  items: OrderItem[]
+}
+
 /** Stock / expiry status used by chips, filters and warnings. */
 export type StatusLevel = 'expired' | 'expiring' | 'out' | 'low' | 'healthy'

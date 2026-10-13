@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.api.v1.endpoints import auth, medicines, patients, prescriptions, sales, users
+from app.api.v1.endpoints import auth, medicines, orders, patients, prescriptions, sales, users
 from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine
 from app.utils.seed import seed_admin, seed_roles, seed_sample_data
@@ -48,6 +48,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(patients.router, prefix="/api/v1/patients", tags=["Patients"])
 app.include_router(medicines.router, prefix="/api/v1/medicines", tags=["Medicines"])
+app.include_router(orders.router, prefix="/api/v1/orders", tags=["Orders"])
 app.include_router(prescriptions.router, prefix="/api/v1/prescriptions", tags=["Prescriptions"])
 app.include_router(sales.router, prefix="/api/v1/sales", tags=["Sales"])
 

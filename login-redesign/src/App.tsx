@@ -4,6 +4,7 @@ import { queryClient } from './lib/queryClient'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { PreferencesProvider } from './state/Preferences'
 import { AuthProvider, useAuth } from './state/AuthProvider'
+import { CartProvider } from './state/Cart'
 import { ToastProvider } from './components/Toast'
 import { TooltipProvider } from './components/ui/Tooltip'
 import AppShell from './layout/AppShell'
@@ -14,6 +15,7 @@ import RegisterPage from './pages/RegisterPage'
 import PatientsPage from './pages/patients/PatientsPage'
 import PrescriptionsPage from './pages/prescriptions/PrescriptionsPage'
 import BillingPage from './pages/billing/BillingPage'
+import OrdersPage from './pages/orders/OrdersPage'
 import type { Token } from './lib/api'
 
 function FullScreenLoader() {
@@ -81,18 +83,21 @@ export default function App() {
             <TooltipProvider>
               <ToastProvider>
                 <AuthProvider>
-                  <Routes>
-                    <Route path="/login" element={<LoginRoute />} />
-                    <Route path="/register" element={<RegisterRoute />} />
-                    <Route element={<ProtectedShell />}>
-                      <Route path="/" element={<DashboardPage />} />
-                      <Route path="/medicines" element={<MedicinesPage />} />
-                      <Route path="/patients" element={<ManagerOnly><PatientsPage /></ManagerOnly>} />
-                      <Route path="/prescriptions" element={<ManagerOnly><PrescriptionsPage /></ManagerOnly>} />
-                      <Route path="/billing" element={<ManagerOnly><BillingPage /></ManagerOnly>} />
-                    </Route>
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
+                  <CartProvider>
+                    <Routes>
+                      <Route path="/login" element={<LoginRoute />} />
+                      <Route path="/register" element={<RegisterRoute />} />
+                      <Route element={<ProtectedShell />}>
+                        <Route path="/" element={<DashboardPage />} />
+                        <Route path="/medicines" element={<MedicinesPage />} />
+                        <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/patients" element={<ManagerOnly><PatientsPage /></ManagerOnly>} />
+                        <Route path="/prescriptions" element={<ManagerOnly><PrescriptionsPage /></ManagerOnly>} />
+                        <Route path="/billing" element={<ManagerOnly><BillingPage /></ManagerOnly>} />
+                      </Route>
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </CartProvider>
                 </AuthProvider>
               </ToastProvider>
             </TooltipProvider>

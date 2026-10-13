@@ -8,6 +8,8 @@ import type {
   Medicine,
   MedicineCreate,
   MedicineUpdate,
+  Order,
+  OrderCreate,
   Patient,
   PatientCreate,
   PatientUpdate,
@@ -105,6 +107,7 @@ function seedPrescriptions(pat: Patient[], med: Medicine[]): Prescription[] {
 let medicines = seedMedicines()
 let patients = seedPatients()
 let prescriptions = seedPrescriptions(patients, medicines)
+let orders: Order[] = []
 let sales: Sale[] = [
   {
     id: uid('sale'),
@@ -267,5 +270,80 @@ export const mockApi = {
       return Promise.reject(Object.assign(new Error('Patient has no e-mail'), { status: 400 }))
     }
     return wait({ sent: true, email: sale.patient_email, message: 'Bill e-mailed (demo).' })
+  },
+
+  /* --------------------------------------------------------------- orders */
+  getOrders: () => wait(orders),
+  createOrder: (payload: OrderCreate) => {
+    const patient = patients.find((p) => p.id === payload.patient_id)
+    const created: Order = {
+      id: uid('ord'),
+      order_number: `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(orders.length + 1).padStart(4, '0')}`,
+      patient_id: payload.patient_id ?? patients[0].id,
+      patient_name: patient ? `${patient.first_name} ${patient.last_name}` : 'You',
+      customer_id: currentUser.id,
+      status: 'Pending',
+      sale_id: null,
+      bill_number: null,
+      notes: payload.notes ?? null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      items: payload.items.map((it) => ({
+        id: uid('ordi'),
+        order_id: 'pending',
+        medicine_id: it.medicine_id,
+        medicine_name: medicines.find((m) => m.id === it.medicine_id)?.name ?? 'Item',
+        quantity: it.quantity,
+        unit_price: medicines.find((m) => m.id === it.medicine_id)?.unit_price ?? 0,
+        subtotal: (medicines.find((m) => m.id === it.medicine_id)?.unit_price ?? 0) * it.quantity,
+      })),
+    }
+    orders = [created, ...orders]
+    return wait(created, 420)
+  },
+  approveOrder: (id: string) => {
+    const order = orders.find((o) => o.id === id)
+    if (!order) return Promise.reject(new Error('Order not found'))
+    const sale: Sale = {
+      id: uid('sale'),
+      bill_number: `BILL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(sales.length + 1).padStart(4, '0')}`,
+      patient_id: order.patient_id,
+      cashier_id: currentUser.id,
+      patient_name: order.patient_name,
+      patient_email: patients.find((p) => p.id === order.patient_id)?.email ?? null,
+      total_amount: order.items.reduce((s, it) => s + it.subtotal, 0),
+      discount_amount: 0,
+      tax_amount: 0,
+      net_amount: order.items.reduce((s, it) => s + it.subtotal, 0),
+      payment_method: 'Cash',
+      payment_status: 'Pending',
+      sale_date: new Date().toISOString(),
+      items: order.items.map((it) => ({ ...it, id: uid('item'), sale_id: id })),
+    }
+    for (const it of order.items) {
+      const m = medicines.find((x) => x.id === it.medicine_id)
+      if (m) m.quantity_in_stock = Math.max(0, m.quantity_in_stock - it.quantity)
+    }
+    order.status = 'Approved'
+    order.sale_id = sale.id
+    order.bill_number = sale.bill_number
+    order.updated_at = new Date().toISOString()
+    sales = [sale, ...sales]
+    return wait({ ...order }, 420)
+  },
+  rejectOrder: (id: string) => {
+    const order = orders.find((o) => o.id === id)
+    if (!order) return Promise.reject(new Error('Order not found'))
+    order.status = 'Rejected'
+    order.updated_at = new Date().toISOString()
+    return wait({ ...order }, 320)
+  },
+  cancelOrder: (id: string) => {
+    const order = orders.find((o) => o.id === id)
+    if (!order) return Promise.reject(new Error('Order not found'))
+    if (order.status !== 'Pending') return Promise.reject(new Error('Only pending orders can be cancelled.'))
+    order.status = 'Cancelled'
+    order.updated_at = new Date().toISOString()
+    return wait({ ...order }, 320)
   },
 }

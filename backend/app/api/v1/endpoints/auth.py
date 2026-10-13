@@ -108,7 +108,7 @@ def request_otp(data: user_schema.OTPRequest, db: Session = Depends(get_db)):
 
     sent = send_otp_email(user.email, otp)
     message = "OTP sent to your registered e-mail." if sent else (
-        "SMTP is not configured - the OTP was written to the server log (demo mode)."
+        "Failed to send the code to your e-mail. Please try again."
     )
     return user_schema.OTPResponse(
         message=message,

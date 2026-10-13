@@ -1,8 +1,9 @@
-import { Eye, MoreVertical, Pencil, Pill, Trash2 } from 'lucide-react'
+import { Eye, MoreVertical, Pencil, Pill, Plus, Trash2 } from 'lucide-react'
 import Chip from '../../components/ui/Chip'
 import Dropdown, { DropdownItem, DropdownSeparator } from '../../components/ui/Dropdown'
 import StockBar from '../../components/ui/StockBar'
 import TiltCard from '../../components/ui/Card'
+import { useCart } from '../../state/Cart'
 import { expiryLevel, formatCurrency, formatDate, stockLevel } from '../../lib/format'
 import type { Medicine } from '../../lib/types'
 
@@ -12,6 +13,25 @@ interface MedicineGridProps {
   onView: (m: Medicine) => void
   onEdit: (m: Medicine) => void
   onDelete: (m: Medicine) => void
+}
+
+function AddToCartButton({ m }: { m: Medicine }) {
+  const { add, setOpen } = useCart()
+  const buyable = m.quantity_in_stock > 0 && expiryLevel(m) !== 'expired'
+  return (
+    <button
+      type="button"
+      disabled={!buyable}
+      onClick={() => {
+        add(m)
+        setOpen(true)
+      }}
+      className="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted"
+    >
+      <Plus className="h-3.5 w-3.5" />
+      Add
+    </button>
+  )
 }
 
 export default function MedicineGrid({ data, isManager, onView, onEdit, onDelete }: MedicineGridProps) {
@@ -84,6 +104,13 @@ export default function MedicineGrid({ data, isManager, onView, onEdit, onDelete
               <Chip tone={exp === 'expired' ? 'danger' : exp === 'expiring' ? 'warn' : 'neutral'}>
                 {exp === 'expired' ? 'Expired' : `exp ${formatDate(m.expiry_date)}`}
               </Chip>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <AddToCartButton m={m} />
+              <span className="text-[11px] text-muted">
+                {m.quantity_in_stock > 0 ? `${m.quantity_in_stock} in stock` : 'Out of stock'}
+              </span>
             </div>
           </TiltCard>
         )

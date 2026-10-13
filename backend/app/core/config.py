@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Login-by-OTP / e-mail settings
     OTP_EXPIRE_MINUTES: int = 5
-    OTP_DEBUG: bool = True  # when True the OTP is logged and returned in the API response
+    OTP_DEBUG: bool = False  # only for local dev: return the OTP in the API response
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""

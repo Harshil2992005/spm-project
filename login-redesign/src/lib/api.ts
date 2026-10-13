@@ -25,6 +25,8 @@ import type {
   Medicine,
   MedicineCreate,
   MedicineUpdate,
+  Order,
+  OrderCreate,
   Patient,
   PatientCreate,
   PatientUpdate,
@@ -333,4 +335,31 @@ export async function updatePrescription(id: string, payload: PrescriptionUpdate
 export async function deletePrescription(id: string): Promise<{ message: string }> {
   if (USE_MOCK) return mockApi.deletePrescription(id)
   return http<{ message: string }>(`/prescriptions/${id}`, { method: 'DELETE' })
+}
+
+/* --------------------------------------------------------------- orders */
+
+export async function getOrders(): Promise<Order[]> {
+  if (USE_MOCK) return mockApi.getOrders()
+  return http<Order[]>('/orders/')
+}
+
+export async function createOrder(payload: OrderCreate): Promise<Order> {
+  if (USE_MOCK) return mockApi.createOrder(payload)
+  return http<Order>('/orders/', { method: 'POST', body: payload })
+}
+
+export async function approveOrder(id: string): Promise<Order> {
+  if (USE_MOCK) return mockApi.approveOrder(id)
+  return http<Order>(`/orders/${id}/approve`, { method: 'POST' })
+}
+
+export async function rejectOrder(id: string): Promise<Order> {
+  if (USE_MOCK) return mockApi.rejectOrder(id)
+  return http<Order>(`/orders/${id}/reject`, { method: 'POST' })
+}
+
+export async function cancelOrder(id: string): Promise<Order> {
+  if (USE_MOCK) return mockApi.cancelOrder(id)
+  return http<Order>(`/orders/${id}/cancel`, { method: 'POST' })
 }

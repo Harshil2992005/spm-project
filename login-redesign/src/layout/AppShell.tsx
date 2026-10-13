@@ -10,6 +10,7 @@ import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import MobileTabBar from './MobileTabBar'
 import CommandPalette from './CommandPalette'
+import CartDrawer from '../components/CartDrawer'
 import { navItemsFor } from './nav'
 
 /** Mobile slide-over navigation. */
@@ -109,6 +110,7 @@ export default function AppShell() {
       <MobileTabBar />
       <MobileNav open={mobileNav} onOpenChange={setMobileNav} />
       <CommandPalette open={search} onOpenChange={setSearch} />
+      <CartDrawer />
     </div>
   )
 }

@@ -1,8 +1,9 @@
-import { Pill, Trash2 } from 'lucide-react'
+import { Pill, Plus, Trash2 } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import Chip from '../../components/ui/Chip'
 import Drawer from '../../components/ui/Drawer'
 import StockBar from '../../components/ui/StockBar'
+import { useCart } from '../../state/Cart'
 import { expiryLevel, formatCurrency, formatDate, stockLevel } from '../../lib/format'
 import type { Medicine } from '../../lib/types'
 
@@ -33,6 +34,9 @@ export default function MedicineDrawer({
   onDelete,
 }: MedicineDrawerProps) {
   const m = medicine
+  const { add, setOpen: setCartOpen } = useCart()
+  const buyable =
+    Boolean(medicine) && medicine!.quantity_in_stock > 0 && expiryLevel(medicine!) !== 'expired'
   return (
     <Drawer open={open} onOpenChange={onOpenChange} title={m?.name ?? 'Medicine'} description={m?.medicine_code}>
       {medicine && (
@@ -121,6 +125,20 @@ export default function MedicineDrawer({
               Updated {formatDate(medicine.updated_at)}
             </span>
           </div>
+
+          {buyable && (
+            <Button
+              variant="primary"
+              className="w-full"
+              leftIcon={<Plus className="h-4 w-4" />}
+              onClick={() => {
+                add(medicine)
+                setCartOpen(true)
+              }}
+            >
+              Add to cart
+            </Button>
+          )}
 
           {isManager && (
             <div className="flex items-center gap-3 pt-1">

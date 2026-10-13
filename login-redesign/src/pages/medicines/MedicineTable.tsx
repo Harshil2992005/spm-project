@@ -18,11 +18,13 @@ import {
   Eye,
   MoreVertical,
   Pencil,
+  Plus,
   Trash2,
 } from 'lucide-react'
 import Chip from '../../components/ui/Chip'
 import Dropdown, { DropdownItem, DropdownSeparator } from '../../components/ui/Dropdown'
 import StockBar from '../../components/ui/StockBar'
+import { useCart } from '../../state/Cart'
 import { daysUntil, expiryLevel, formatCurrency, formatDate, stockLevel } from '../../lib/format'
 import type { Medicine } from '../../lib/types'
 
@@ -60,6 +62,27 @@ function StockChip({ m }: { m: Medicine }) {
   if (level === 'out') return <Chip tone="danger">Out</Chip>
   if (level === 'low') return <Chip tone="warn">Low</Chip>
   return <Chip tone="ok">In stock</Chip>
+}
+
+function AddToCartButton({ m }: { m: Medicine }) {
+  const { add, setOpen } = useCart()
+  const buyable = m.quantity_in_stock > 0 && expiryLevel(m) !== 'expired'
+  return (
+    <button
+      type="button"
+      disabled={!buyable}
+      onClick={(e) => {
+        e.stopPropagation()
+        add(m)
+        setOpen(true)
+      }}
+      aria-label={`Add ${m.name} to cart`}
+      className="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted"
+    >
+      <Plus className="h-3.5 w-3.5" />
+      Add
+    </button>
+  )
 }
 
 function ExpiryCell({ m }: { m: Medicine }) {
@@ -167,7 +190,8 @@ export default function MedicineTable({ data, isManager, onView, onEdit, onDelet
         cell: (info) => {
           const m = info.row.original
           return (
-            <div className="text-right">
+            <div className="flex items-center justify-end gap-1.5">
+              <AddToCartButton m={m} />
               <Dropdown
                 trigger={
                   <button

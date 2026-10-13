@@ -14,8 +14,6 @@ interface OtpFormProps {
   verifying?: boolean
   serverError?: { title: string; message: string } | null
   onDismissError?: () => void
-  /** OTP returned by the server in demo mode (no SMTP) so it can be shown. */
-  debugOtp?: string | null
   /** Where to start (useful when returning to the tab). */
   initialIdentifier?: string
 }
@@ -29,7 +27,6 @@ export default function OtpForm({
   verifying = false,
   serverError,
   onDismissError,
-  debugOtp,
   initialIdentifier = '',
 }: OtpFormProps) {
   const [identifier, setIdentifier] = useState(initialIdentifier)
@@ -153,13 +150,6 @@ export default function OtpForm({
                 We sent a 6-digit code to <b>{identifier}</b>
               </span>
             </div>
-
-            {debugOtp && (
-              <div className="rounded-2xl border border-amber-300/60 bg-amber-50/80 px-3.5 py-2.5 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-200">
-                <span className="font-semibold">Demo mode</span> (SMTP not configured). Your code is{' '}
-                <span className="font-mono text-sm font-bold tracking-[0.2em]">{debugOtp}</span>
-              </div>
-            )}
 
             <OtpInput
               value={code}

@@ -28,6 +28,28 @@ class PrescriptionItem(Base):
     dosage_instructions = Column(Text)
     created_at = Column(DateTime, default=func.now())
 
+class Order(Base):
+    """A customer's cart request. Approving it creates the Sale and e-mails the invoice."""
+    __tablename__ = 'orders'
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    order_number = Column(String(20), unique=True, nullable=False, index=True)
+    patient_id = Column(UUID(as_uuid=True), ForeignKey('patients.id'), nullable=False)
+    customer_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    status = Column(String(20), default='Pending')  # Pending | Approved | Rejected | Cancelled
+    sale_id = Column(UUID(as_uuid=True), ForeignKey('sales.id'))
+    notes = Column(Text)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+class OrderItem(Base):
+    __tablename__ = 'order_items'
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id', ondelete='CASCADE'), nullable=False)
+    medicine_id = Column(UUID(as_uuid=True), ForeignKey('medicines.id'), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    unit_price = Column(DECIMAL(10, 2), nullable=False)  # snapshot from the catalogue at order time
+    subtotal = Column(DECIMAL(10, 2), nullable=False)
+
 class Sale(Base):
     __tablename__ = 'sales'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
