@@ -19,3 +19,13 @@ services:
         value: "true"
       - key: GOOGLE_CLIENT_ID
         sync: false
+      - key: SMTP_HOST
+        value: "smtp.gmail.com"
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: "harshilpatel2992005@gmail.com"
+      - key: SMTP_PASSWORD
+        value: "gmpogeprcadhugpl"
+      - key: SMTP_FROM
+        value: "harshilpatel2992005@gmail.com"
