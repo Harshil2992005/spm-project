@@ -17,3 +17,5 @@ services:
         value: "true"
       - key: SEED_DEMO_DATA
         value: "true"
+      - key: GOOGLE_CLIENT_ID
+        sync: false
